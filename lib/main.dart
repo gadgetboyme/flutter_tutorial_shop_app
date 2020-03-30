@@ -9,6 +9,7 @@ import './providers/orders.dart';
 import 'package:provider/provider.dart';
 import './screens/orders_screen.dart';
 import './screens/user_product_screen.dart';
+import './screens/edit_product_screen.dart';
 
 void main() => runApp(MyApp());
 
@@ -29,6 +30,7 @@ class MyApp extends StatelessWidget {
             fontFamily: 'Lato'),
         home: ProductsOverviewScreen(),
         routes: {
+          EditProductScreen.routeName: (ctx) => EditProductScreen(),
           ProductDetailScreen.routeName: (ctx) => ProductDetailScreen(),
           CartScreen.routeName: (ctx) => CartScreen(),
           OrdersScreen.routeName: (ctx) => OrdersScreen(),
