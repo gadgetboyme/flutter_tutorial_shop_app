@@ -1,6 +1,10 @@
-import 'package:flutter/foundation.dart';
+import 'dart:convert';
 
-class Product with ChangeNotifier{
+import 'package:flutter/foundation.dart';
+import 'package:flutter_tutorial_shop_app/models/http_exception.dart';
+import 'package:http/http.dart' as http;
+
+class Product with ChangeNotifier {
   final String id;
   final String title;
   final String description;
@@ -8,18 +12,34 @@ class Product with ChangeNotifier{
   final String imageUrl;
   bool isFavourite;
 
-  Product({
-    @required this.id,
-    @required this.title,
-    @required this.description,
-    @required this.price,
-    @required this.imageUrl,
-    this.isFavourite = false
-    });
+  Product(
+      {@required this.id,
+      @required this.title,
+      @required this.description,
+      @required this.price,
+      @required this.imageUrl,
+      this.isFavourite = false});
 
-    void toggleFavouriteStatus(){
-      isFavourite = !isFavourite;
-      //lets all listeners know a change has occurred
-      notifyListeners();
+  void _setFavValue(bool newValue) {
+    isFavourite = newValue;
+    notifyListeners();
+  }
+
+  Future<void> toggleFavouriteStatus(String authToken, String userId) async {
+    final oldStatus = isFavourite;
+    isFavourite = !isFavourite;
+    //lets all listeners know a change has occurred
+    notifyListeners();
+    final url =
+        'https://flutter-tutorial-shop.firebaseio.com/userFavorites/$userId/$id.json?auth=$authToken';
+    try {
+      final response = await http.put(url, body: json.encode(isFavourite));
+      if (response.statusCode >= 400) {
+        _setFavValue(oldStatus);
+        throw new HttpException('Unable to set favourite!');
+      }
+    } catch (error) {
+      _setFavValue(oldStatus);
     }
+  }
 }

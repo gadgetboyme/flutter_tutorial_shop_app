@@ -6,6 +6,7 @@ import 'package:provider/provider.dart';
 import '../widgets/products_grid.dart';
 import '../widgets/badge.dart';
 import '../widgets/app_drawer.dart';
+import '../providers/products.dart';
 
 enum FilterOptions {
   Favourites,
@@ -19,6 +20,30 @@ class ProductsOverviewScreen extends StatefulWidget {
 
 class _ProductsOverviewScreenState extends State<ProductsOverviewScreen> {
   var _showOnlyFavourites = false;
+  var _isInit = true;
+  var _isLoading = true;
+
+  @override
+  void initState() {
+    // Provider.of<Products>(context).fetchAndSetProducts(); Won't work (context not initialised)
+    // Future.delayed(Duration.zero).then((_) {
+    //   Provider.of<Products>(context).fetchAndSetProducts();
+    // }); //Will work, but only after the rest of the widget has been initialised
+    super.initState();
+  }
+
+  @override
+  void didChangeDependencies() {
+    if (_isInit) {
+      _isLoading = true;
+      Provider.of<Products>(context).fetchAndSetProducts().then((_) {
+        _isLoading = false;
+      });
+    }
+    _isInit = false;
+    super.didChangeDependencies();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -48,23 +73,23 @@ class _ProductsOverviewScreenState extends State<ProductsOverviewScreen> {
             ],
           ),
           Consumer<Cart>(
-                builder: (_, cartData, ch) => Badge(
-                  child: ch,
-                  value: cartData.itemCount.toString(),
-                ),
-                child: IconButton(
-                  icon: Icon(
-                    Icons.shopping_cart,
-                  ),
-                  onPressed: () {
-                    Navigator.of(context).pushNamed(CartScreen.routeName);
-                  },
-                ),
+            builder: (_, cartData, ch) => Badge(
+              child: ch,
+              value: cartData.itemCount.toString(),
+            ),
+            child: IconButton(
+              icon: Icon(
+                Icons.shopping_cart,
               ),
+              onPressed: () {
+                Navigator.of(context).pushNamed(CartScreen.routeName);
+              },
+            ),
+          ),
         ],
       ),
       drawer: AppDrawer(),
-      body: ProductsGrid(_showOnlyFavourites), //loadedProducts: loadedProducts
+      body: _isLoading ? Center(child: CircularProgressIndicator()) : ProductsGrid(_showOnlyFavourites), 
     );
   }
 }
