@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_tutorial_shop_app/providers/auth.dart';
+import 'package:provider/provider.dart';
 import '../screens/orders_screen.dart';
 import '../screens/user_product_screen.dart';
 
@@ -15,17 +17,41 @@ class AppDrawer extends StatelessWidget {
             automaticallyImplyLeading: false,
           ),
           Divider(),
-          ListTile(leading: Icon(Icons.shop), title: Text('Shop'), onTap: () {
-            Navigator.of(context).pushReplacementNamed('/');
-          },),
+          ListTile(
+            leading: Icon(Icons.shop),
+            title: Text('Shop'),
+            onTap: () {
+              Navigator.of(context).pushReplacementNamed('/');
+            },
+          ),
           Divider(),
-          ListTile(leading: Icon(Icons.payment), title: Text('Orders'), onTap: () {
-            Navigator.of(context).pushReplacementNamed(OrdersScreen.routeName);
-          },),
+          ListTile(
+            leading: Icon(Icons.payment),
+            title: Text('Orders'),
+            onTap: () {
+              Navigator.of(context)
+                  .pushReplacementNamed(OrdersScreen.routeName);
+            },
+          ),
           Divider(),
-          ListTile(leading: Icon(Icons.edit), title: Text('Manage Products'), onTap: () {
-            Navigator.of(context).pushReplacementNamed(UserProductScreen.routeName);
-          },)
+          ListTile(
+            leading: Icon(Icons.edit),
+            title: Text('Manage Products'),
+            onTap: () {
+              Navigator.of(context)
+                  .pushReplacementNamed(UserProductScreen.routeName);
+            },
+          ),
+          Divider(),
+          ListTile(
+            leading: Icon(Icons.exit_to_app),
+            title: Text('Logout'),
+            onTap: () {
+              Navigator.of(context).pop();
+              Navigator.pushReplacementNamed(context, '/');
+              Provider.of<Auth>(context, listen: false).logout();
+            },
+          )
         ],
       ),
     );
